@@ -1,0 +1,39 @@
+/* Product page: photos left, buy column right; on phones the price and sizes come before the second photo. */
+.crumbs { padding: 20px 0 16px; }
+.crumbs a { display: inline-flex; align-items: center; min-height: 44px; min-width: 44px; text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; }
+.pdp__grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(340px, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
+.pdp__gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pdp__gallery img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: var(--sc-surface); }
+.pdp__gallery img:first-child { grid-column: 1 / -1; }
+.pdp__sticky { position: sticky; top: calc(var(--bar-h) + 24px); display: grid; gap: 24px; padding-bottom: 40px; }
+.pdp__buy h1 { font-size: var(--t-h2); letter-spacing: -0.045em; }
+.pdp__price { font-size: 18px; margin-top: -8px; }
+.pdp__opt { display: grid; gap: 12px; }
+.pdp__opt .swatches { --dot: 30px; }
+.pdp__fit { font-size: 14px; color: var(--sc-ink-soft); }
+.pdp__add { min-height: 56px; font-size: 16px; }
+.pdp__acc details { border-top: 1px solid var(--line); }
+.pdp__acc details:last-child { border-bottom: 1px solid var(--line); }
+.pdp__acc summary { list-style: none; cursor: pointer; padding: 16px 0; font-weight: 600; display: flex; justify-content: space-between; }
+.pdp__acc summary::-webkit-details-marker { display: none; }
+.pdp__acc summary::after { content: "+"; font-family: var(--mono); font-weight: 400; transition: transform 200ms var(--ease); }
+.pdp__acc details[open] summary::after { transform: rotate(45deg); }
+.pdp__acc details p { padding-bottom: 16px; font-size: 16px; color: var(--sc-ink-soft); max-width: 62ch; }
+.pdp__pair { padding: 96px 0; }
+.pdp__pair h2 { font-size: var(--t-h3); margin-bottom: 28px; }
+.pdp__pair .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px 16px; }
+.pdp__bar { display: none; }
+@media (max-width: 860px) {
+  .pdp__grid { grid-template-columns: 1fr; }
+  .pdp__gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 8px; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); scrollbar-width: none; }
+  .pdp__gallery img { flex: 0 0 86%; scroll-snap-align: center; }
+  .pdp__sticky { position: static; }
+  .pdp__pair .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 8px; }
+  /* Sticky add-to-bag once the main button has scrolled away. */
+  .pdp__bar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; gap: 12px; align-items: center; justify-content: space-between;
+    padding: 12px var(--gutter) calc(10px + env(safe-area-inset-bottom)); background: var(--sc-canvas); border-top: 1px solid var(--line);
+    transform: translateY(110%); transition: transform 260ms var(--ease); }
+  .pdp__bar.is-on { transform: none; }
+  .pdp__bar-name { font-weight: 600; font-size: 14px; line-height: 1.25; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}

@@ -1,0 +1,60 @@
+/* Shop: every style, filterable. */
+.shop__head { display: flex; align-items: baseline; gap: 16px; padding: 40px 0 20px; }
+.shop__head h1 { font-size: var(--t-h1); letter-spacing: -0.05em; }
+.shop__tools { position: sticky; top: var(--bar-h); z-index: 40; display: flex; justify-content: space-between; gap: 16px; align-items: center;
+  padding: 12px 0; background: var(--sc-canvas); border-bottom: 1px solid var(--line); }
+.shop__types { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); }
+.shop__types::-webkit-scrollbar { display: none; }
+.shop__right { display: flex; gap: 8px; align-items: center; flex: none; }
+.chip { height: 44px; padding: 0 16px; border: 1px solid var(--line); background: transparent; font-size: 14px; white-space: nowrap; transition: background-color 140ms var(--ease), border-color 140ms var(--ease), color 140ms var(--ease); }
+.chip:hover { border-color: var(--sc-ink); }
+.chip[aria-pressed="true"] { background: var(--sc-ink); border-color: var(--sc-ink); color: var(--sc-canvas); }
+.chip--size { font: 500 14px var(--mono); min-width: 52px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.shop__filter-btn { min-height: 44px; padding: 0 16px; font-size: 14px; }
+.shop__fcount:not(:empty)::before { content: " ("; }
+.shop__fcount:not(:empty)::after { content: ")"; }
+.shop__sort select { height: 44px; padding: 0 32px 0 12px; border: 1px solid var(--line); background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%232A1A17'/%3E%3C/svg%3E") no-repeat right 12px center; appearance: none; border-radius: var(--radius); font-size: 14px; }
+
+.shop__body { display: grid; grid-template-columns: 260px 1fr; gap: 32px; padding: 28px 0 96px; align-items: start; }
+.filters { position: sticky; top: calc(var(--bar-h) + 76px); max-height: calc(100svh - var(--bar-h) - 96px); display: flex; flex-direction: column; }
+.filters__head, .filters__foot { display: none; }
+.filters__scroll { overflow: auto; display: grid; gap: 24px; padding-right: 8px; scrollbar-width: thin; }
+.filters fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 12px; }
+.filters legend { padding: 0; margin-bottom: 12px; }
+.filters__search { display: grid; gap: 12px; }
+.filters__search input { height: 44px; padding: 0 12px; border: 1px solid var(--line); background: transparent; border-radius: var(--radius); }
+.filters__search input:focus { border-color: var(--sc-ink); outline: none; }
+.filters__colours { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.fcolour { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 0 4px; border: 0; background: none; font-size: 14px; text-align: left; }
+.fcolour .swatch { --hit: 18px; --dot: 18px; flex: none; pointer-events: none; }
+.fcolour[aria-pressed="true"] { font-weight: 600; }
+.fcolour[aria-pressed="true"] .swatch::after { border-color: var(--sc-ink); }
+
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px 16px; }
+.grid--4 { grid-template-columns: repeat(4, 1fr); }
+.grid .card[hidden] { display: none; }
+.grid__empty { grid-column: 1 / -1; padding: 64px 0; font-size: 18px; }
+.card.is-entering { animation: card-in 360ms var(--ease) both; }
+@keyframes card-in { from { opacity: 0; transform: translateY(10px); } }
+
+@media (min-width: 1280px) { .shop .grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 860px) {
+  .shop__head { padding-top: 24px; }
+  .shop__tools { flex-direction: column; align-items: stretch; gap: 12px; }
+  .shop__right { justify-content: space-between; }
+  .shop__right > * { flex: 1; }
+  .shop__sort select { width: 100%; }
+  .shop__body { grid-template-columns: 1fr; padding-top: 20px; }
+  .grid, .grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 8px; }
+  /* Filters become a sheet with a live result count on its button. */
+  .filters { position: fixed; inset: 0; top: auto; z-index: 120; max-height: 88svh; background: var(--sc-canvas); box-shadow: var(--shadow);
+    transform: translateY(100%); transition: transform 300ms var(--ease); visibility: hidden; }
+  .filters.is-open { transform: none; visibility: visible; }
+  .filters__head { display: flex; justify-content: space-between; align-items: center; padding: 12px var(--gutter); border-bottom: 1px solid var(--line); }
+  .filters__head h2 { font-size: 18px; letter-spacing: -0.01em; }
+  .filters__scroll { padding: 20px var(--gutter); }
+  .filters__foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px var(--gutter) calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+  .filters__foot .btn { flex: 1; }
+}
+@media (min-width: 861px) { .shop__filter-btn { display: none; } }

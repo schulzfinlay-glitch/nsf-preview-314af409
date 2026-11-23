@@ -19,6 +19,12 @@ window.NSF_PROMO = {
   // preview always shows it. The real domain (nonstopflow.com.au) keeps to
   // the times above. Add ?promo=clock to any address to see the real rule.
   alwaysOn: ['github.io', 'localhost', '127.0.0.1'],
+  // ONE shared deck for everyone: the web app URL of tools/deck-pool.gs (a
+  // Google Sheet). Each card can then be taken once, ever, and taken cards grey
+  // out live for every visitor. Empty = demo: a pretend pool in each browser.
+  // With the pool on, the prizes and REAL codes live in the Sheet's script, not
+  // here; the codes below are only used by the demo.
+  pool: '',
   prizes: [
     { label: '50% off', code: 'NSFA-BF50', cards: 2 },
     // One code for both parts: 15% off the order plus a free gym bag (see README).

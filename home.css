@@ -180,3 +180,11 @@
 @media (prefers-reduced-motion: reduce) { .pc { animation: none; } .pc.is-chosen { transition: none; } }
 .deck__nothanks { color: inherit; opacity: .75; font-size: 14px; justify-self: start; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; padding: 0; min-height: 44px; cursor: pointer; }
 .deck__nothanks:hover { opacity: 1; }
+
+/* Shared deck: a taken card greys out and can't be picked; a card being dealt
+   (waiting on the pool) breathes until the answer comes back. */
+.pc.is-taken { opacity: .2; cursor: not-allowed; filter: saturate(.4); }
+.pc.is-taken .pc__back::after { content: "Taken"; position: absolute; left: 0; right: 0; bottom: 18%; text-align: center; font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--sc-accent); }
+.pc.is-dealing { animation: pc-deal 900ms var(--ease) infinite alternate; }
+@keyframes pc-deal { to { transform: translateY(-8px) scale(1.04); } }
+@media (prefers-reduced-motion: reduce) { .pc.is-dealing { animation: none; outline: 2px solid var(--sc-canvas); } }

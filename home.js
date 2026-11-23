@@ -90,28 +90,40 @@
     }
   });
 
-  // During Black Friday the banner becomes the sale banner, and its button deals the deck.
-  if (S && S.promoLive && S.promoLive()) {
+  // Black Friday and the banner. Cards are only dealt on arrival (the deck opens
+  // by itself); the banner never asks anyone to pick a card. Once a card is
+  // turned over, the banner shows that card: waiting for an email, or on the bag.
+  const everyday = (() => {
+    const q = (s) => document.querySelector(s);
+    return { kicker: q('[data-hero-kicker]')?.textContent, title: q('[data-hero-title]')?.innerHTML, sub: q('[data-hero-sub]')?.textContent, ctas: q('[data-hero-ctas]')?.innerHTML };
+  })();
+  function paintBanner() {
     const kicker = document.querySelector('[data-hero-kicker]');
     const title = document.querySelector('[data-hero-title]');
     const sub = document.querySelector('[data-hero-sub]');
     const ctas = document.querySelector('[data-hero-ctas]');
-    document.querySelector('.hero')?.classList.add('hero--sale');
-    if (kicker) kicker.textContent = 'Black Friday · 24 hours only';
-    if (title) title.innerHTML = 'Pick a card.<br>Keep the discount.';
-    if (sub) sub.textContent = '52 cards, one each. Whatever you turn over is yours, on everything in your bag.';
-    const deal = S.store.get('nsf-deck', null);
-    if (deal && deal.done && deal.code) {
-      // Already claimed: the banner says where the discount is, not "pick a card" again.
-      if (title) title.innerHTML = `Your ${deal.label}<br>is on your bag.`;
-      if (sub) sub.textContent = 'It comes off at checkout, on everything in your bag. Ends 8pm Friday, Brisbane time.';
-      if (ctas) {
-        ctas.innerHTML = '<a class="btn btn--light" href="/nsf-preview-314af409/shop/">Shop now</a><button type="button" class="btn btn--ghost" data-hero-bag>View bag</button>';
-        ctas.querySelector('[data-hero-bag]').addEventListener('click', () => S.openBag());
-      }
-    } else if (ctas) {
-      ctas.innerHTML = '<button type="button" class="btn btn--light" data-hero-deck>Pick a card</button><a class="btn btn--ghost" href="/nsf-preview-314af409/shop/">Shop all</a>';
-      ctas.querySelector('[data-hero-deck]').addEventListener('click', () => window.NSFDeck?.open());
+    const hero = document.querySelector('.hero');
+    if (!title || !ctas) return;
+    const deal = S && S.promoLive && S.promoLive() ? S.store.get('nsf-deck', null) : null;
+    if (!deal || deal.card == null) {
+      hero?.classList.remove('hero--sale');
+      kicker.textContent = everyday.kicker; title.innerHTML = everyday.title; sub.textContent = everyday.sub; ctas.innerHTML = everyday.ctas;
+      return;
+    }
+    hero?.classList.add('hero--sale');
+    kicker.textContent = 'Black Friday · ends 8pm Friday, Brisbane time';
+    if (deal.done && deal.code) {
+      title.innerHTML = `Your ${deal.label}<br>is on your bag.`;
+      sub.textContent = 'It comes off at checkout, on everything in your bag.';
+      ctas.innerHTML = '<a class="btn btn--light" href="/nsf-preview-314af409/shop/">Shop now</a><button type="button" class="btn btn--ghost" data-hero-bag>View bag</button>';
+      ctas.querySelector('[data-hero-bag]').addEventListener('click', () => S.openBag());
+    } else {
+      title.innerHTML = `Your ${deal.label}<br>is waiting.`;
+      sub.textContent = 'Add your email to claim it. It comes off at checkout, on everything in your bag.';
+      ctas.innerHTML = '<button type="button" class="btn btn--light" data-hero-claim>Claim it</button><a class="btn btn--ghost" href="/nsf-preview-314af409/shop/">Shop all</a>';
+      ctas.querySelector('[data-hero-claim]').addEventListener('click', () => window.NSFDeck?.open());
     }
   }
+  paintBanner();
+  addEventListener('nsf-deck-change', paintBanner);
 })();

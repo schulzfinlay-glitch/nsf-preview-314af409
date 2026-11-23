@@ -1,8 +1,9 @@
 /* Black Friday: the 52-card deck.
  *
- * EVERYTHING BELOW IS A PLACEHOLDER until the client confirms it.
- * Each code must exist in Shopify admin > Discounts before launch, set to
- * one use per customer. The deck only shows the code; Shopify enforces it.
+ * The prizes are the owner's (24 Nov 2026). The CODES are still placeholders:
+ * each must exist in Shopify admin > Discounts before launch, set to one use
+ * per customer, with the same start and end times as below. The deck only
+ * shows the code; Shopify enforces it.
  *
  * The cards add up to 52. Every visitor gets one card, shuffled for them,
  * and keeps it if they come back.
@@ -19,9 +20,11 @@ window.NSF_PROMO = {
   // the times above. Add ?promo=clock to any address to see the real rule.
   alwaysOn: ['github.io', 'localhost', '127.0.0.1'],
   prizes: [
-    { label: '10% off', code: 'NSFA-BF10', cards: 26 },
-    { label: '15% off', code: 'NSFA-BF15', cards: 16 },
-    { label: '20% off', code: 'NSFA-BF20', cards: 8 },
-    { label: '30% off', code: 'NSFA-BF30', cards: 2 },
+    { label: '50% off', code: 'NSFA-BF50', cards: 2 },
+    // One code for both parts: 15% off the order plus a free gym bag (see README).
+    { label: 'Free gym bag + 15% off', code: 'NSFA-BFBAG', cards: 2 },
+    { label: '25% off', code: 'NSFA-BF25', cards: 10 },
+    { label: '20% off', code: 'NSFA-BF20', cards: 10 },
+    { label: '15% off', code: 'NSFA-BF15', cards: 28 },
   ],
 };

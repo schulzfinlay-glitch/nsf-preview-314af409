@@ -29,11 +29,13 @@
   }
   const save = () => S.store.set('nsf-deck', state);
 
-  // Between the intro and the deck, the announcement bar offers the deck to anyone who skipped it.
+  // Cards are dealt only on arrival (owner, 24 Nov 2026). The bar never asks
+  // anyone to pick; once a card is turned over it shows that card instead.
   function offerInBar() {
     if (state.done && state.code) { $('.note').textContent = `Black Friday: your ${state.label} is on your bag`; return; }
+    if (state.card == null) return; // skipped without picking: the bar stays the shipping note
     const note = $('.note');
-    const text = state.card != null ? `Black Friday: add your email to claim your ${state.label}` : 'Black Friday: pick a card for your discount';
+    const text = `Black Friday: add your email to claim your ${state.label}`;
     note.innerHTML = `<button type="button" class="note__deck">${text}</button>`;
     note.querySelector('button').addEventListener('click', open);
   }
@@ -157,6 +159,7 @@
       if (state.done && state.code) S.toast(`Your ${state.label} is on your bag. It's applied at checkout.`, 'View bag', S.openBag);
       else if (state.card != null) S.toast(`No discount without an email. Your ${state.label} card is saved if you change your mind.`, 'Claim it', open);
       S.renderBag?.();
+      dispatchEvent(new Event('nsf-deck-change')); // the home banner shows the card
       document.querySelector('#main h1, #main')?.focus?.({ preventScroll: true });
     };
     if (reduce) return finish();

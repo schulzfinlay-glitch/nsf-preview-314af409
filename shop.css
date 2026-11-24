@@ -58,3 +58,16 @@
   .filters__foot .btn { flex: 1; }
 }
 @media (min-width: 861px) { .shop__filter-btn { display: none; } }
+
+/* Colour filter folds away, like Leelo's filter groups: a row of sample dots
+   says what's inside; opens on tap, and by itself when a colour is chosen. */
+.fgroup { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.fgroup summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; min-height: 48px; }
+.fgroup summary::-webkit-details-marker { display: none; }
+.fgroup summary::after { content: "+"; margin-left: auto; font: 400 18px/1 var(--mono); transition: transform 200ms var(--ease); }
+.fgroup[open] summary::after { transform: rotate(45deg); }
+.fgroup__dots { display: inline-flex; gap: 4px; }
+.fgroup__dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px rgba(42,26,23,.18); }
+.fgroup[open] .fgroup__dots { display: none; }
+.fgroup__n { color: var(--sc-ink); text-transform: none; letter-spacing: 0; }
+.fgroup .filters__colours { padding-bottom: 16px; }

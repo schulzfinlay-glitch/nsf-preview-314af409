@@ -98,7 +98,7 @@
   /* ---------- The table ---------- */
   let deck, others, poll = 0, busy = false, left = 52;
 
-  function open(first) {
+  function open(first, pending) {
     if (deck) return;
     deck = document.createElement('section');
     deck.className = 'deck'; deck.setAttribute('role', 'dialog'); deck.setAttribute('aria-modal', 'true'); deck.setAttribute('aria-labelledby', 'deck-h');
@@ -125,7 +125,8 @@
     deck.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(true); });
     if (state.card != null) { reveal(state.card, true); return; }
     if (first) paintTaken(first);
-    refresh();
+    if (pending) pending.then((s) => { if (s) paintTaken(s); else refresh(); });
+    else if (!first) refresh();
     poll = setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, POLL_MS);
     setTimeout(() => deck?.querySelector('.pc:not(.is-taken)')?.focus({ preventScroll: true }), reduce ? 0 : 520);
   }
@@ -167,10 +168,10 @@
     if (busy) return; busy = true;
     const pc = deck.querySelector(`.pc[data-k="${k}"]`);
     const msg = deck.querySelector('.deck__foot .deck__msg');
-    pc.classList.add('is-dealing');
+    pc.classList.add('is-dealing'); deck.classList.add('is-dealing');
     let res;
     try { res = await pool.pick(k); } catch { res = { ok: false, error: 'network' }; }
-    pc.classList.remove('is-dealing'); busy = false;
+    pc.classList.remove('is-dealing'); deck?.classList.remove('is-dealing'); busy = false;
     if (!deck) return;
     if (!res.ok) {
       if (res.error === 'taken') {
@@ -274,12 +275,16 @@
   }
 
   window.NSFDeck = { open: () => open() };
+  // Ask the pool which cards are gone straight away, while the intro plays
+  // (Google takes ~2 s to answer), so the deck can deal the moment it ends.
+  const early = state.card == null && (force || !skipped) ? pool.state().catch(() => undefined) : null;
   (window.NSFIntro || Promise.resolve()).then(async () => {
     if (state.card != null) { if (force || (!state.done && !skipped)) open(); else offerInBar(); return; }
     if (!force && skipped) return;
-    // Only deal if there are cards left; if the pool can't be reached, stay out of the way.
-    let s = null;
-    try { s = await pool.state(); } catch { return; }
-    if (s && s.left > 0) open(s);
+    const quick = await Promise.race([early, new Promise((r) => setTimeout(() => r('wait'), 250))]);
+    if (quick === undefined) return; // the pool can't be reached: stay out of the way
+    if (quick !== 'wait') { if (quick && quick.left > 0) open(quick); return; }
+    // Still waiting on Google: deal now; cards already taken grey out when the answer lands.
+    open(null, early);
   });
 })();

@@ -80,6 +80,9 @@
     $$('[data-f-type]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.fType === f.type)));
     $$('[data-f-gender]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.fGender === f.gender)));
     $$('[data-f-colour]').forEach((b) => b.setAttribute('aria-pressed', String(f.colours.has(b.dataset.fColour))));
+    // Colour folds away (like Leelo's filters); it opens by itself when a colour is chosen.
+    const cg = $('[data-fgroup-colour]');
+    if (cg) { if (f.colours.size) cg.open = true; $('[data-f-colour-count]', cg).textContent = f.colours.size ? `${f.colours.size} chosen` : ''; }
     $$('[data-f-size]').forEach((b) => b.setAttribute('aria-pressed', String(f.sizes.has(b.dataset.fSize))));
     $('[data-f-sale]').setAttribute('aria-pressed', String(f.sale));
     $('[data-f-under]').setAttribute('aria-pressed', String(!!f.under));

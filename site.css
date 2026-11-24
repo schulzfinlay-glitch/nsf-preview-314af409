@@ -230,14 +230,20 @@ p { margin: 0; text-wrap: pretty; }
 .card.is-adding .card__add, .card:focus-within .card__add { opacity: 1; transform: none; pointer-events: auto; }
 @media (hover: hover) and (pointer: fine) { .card:hover .card__add { opacity: 1; transform: none; pointer-events: auto; } }
 .card__plus { position: absolute; right: 8px; bottom: 8px; z-index: 3; width: 44px; height: 44px; border: 0; background: var(--sc-canvas); display: grid; place-items: center; }
-/* Card swatches: small dots on desktop; on phones three 44px dots and a "+N" link to the product page. */
-.card .swatches { --hit: 24px; --dot: 12px; }
-.swatches__more { display: none; }
+/* Card swatches, tidy like LSKD and Leelo: one row, the first few colours and
+   a "+N" link to the product page for the rest. Desktop five, phones three. */
+.card .swatches { --hit: 28px; --dot: 14px; flex-wrap: nowrap; align-items: center; }
+.card .swatches li:nth-child(n+6):not(.swatches__more) { display: none; }
+.swatches__more a { display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 4px; font: 500 12px/1 var(--mono); color: var(--sc-ink-soft); text-decoration: none; }
+.swatches__more a:hover { color: var(--sc-ink); text-decoration: underline; }
+.swatches__more--phone, .swatches__n--phone { display: none; }
 @media (max-width: 860px) {
-  .card .swatches { --hit: 44px; --dot: 16px; flex-wrap: nowrap; }
+  .card .swatches { --hit: 44px; --dot: 16px; }
   .card .swatches li:nth-child(n+4):not(.swatches__more) { display: none; }
-  .swatches__more { display: block; }
-  .swatches__more a { display: grid; place-items: center; min-width: 44px; height: 44px; font: 500 12px/1 var(--mono); color: var(--sc-ink-soft); text-decoration: none; }
+  .swatches__more--phone { display: block; }
+  .swatches__n--phone { display: inline; }
+  .swatches__n--desk { display: none; }
+  .swatches__more a { min-width: 44px; height: 44px; }
   .card__add { padding: 8px; }
   .card__add .sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
 }

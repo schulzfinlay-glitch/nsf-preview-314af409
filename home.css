@@ -188,3 +188,6 @@
 .pc.is-dealing { animation: pc-deal 900ms var(--ease) infinite alternate; }
 @keyframes pc-deal { to { transform: translateY(-8px) scale(1.04); } }
 @media (prefers-reduced-motion: reduce) { .pc.is-dealing { animation: none; outline: 2px solid var(--sc-canvas); } }
+/* While the shared deck confirms a pick (~2 s with Google), the card says so. */
+.pc.is-dealing .pc__back::after { content: "Dealing…"; position: absolute; left: 0; right: 0; bottom: 18%; text-align: center; font: 500 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--sc-accent); }
+.deck.is-dealing .pc:not(.is-dealing) { opacity: .6; transition: opacity 200ms var(--ease); }

@@ -23,14 +23,14 @@ window.NSF_PROMO = {
   // Google Sheet). Each card can then be taken once, ever, and taken cards grey
   // out live for every visitor. Empty = demo: a pretend pool in each browser.
   // With the pool on, the prizes and REAL codes live in the Sheet's script, not
-  // here; the codes below are only used by the demo.
-  pool: '',
+  // here (codes below stay empty: they'd be public). Only the demo used them.
+  pool: 'https://script.google.com/macros/s/AKfycbyvFTH__fOWmCYZERaeDTMrYz3sr9kMBfd8OX2NsDb8XkxPX9SB4I4o-ppnCa4Ctw9iPQ/exec',
   prizes: [
-    { label: '50% off', code: 'NSFA-BF50', cards: 2 },
+    { label: '50% off', code: '', cards: 2 },
     // One code for both parts: 15% off the order plus a free gym bag (see README).
-    { label: 'Free gym bag + 15% off', code: 'NSFA-BFBAG', cards: 2 },
-    { label: '25% off', code: 'NSFA-BF25', cards: 10 },
-    { label: '20% off', code: 'NSFA-BF20', cards: 10 },
-    { label: '15% off', code: 'NSFA-BF15', cards: 28 },
+    { label: 'Free gym bag + 15% off', code: '', cards: 2 },
+    { label: '25% off', code: '', cards: 10 },
+    { label: '20% off', code: '', cards: 10 },
+    { label: '15% off', code: '', cards: 28 },
   ],
 };

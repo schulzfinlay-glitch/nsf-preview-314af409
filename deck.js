@@ -18,7 +18,7 @@
   const $ = (s, r = document) => r.querySelector(s);
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const params = new URLSearchParams(location.search);
-  if (params.get('deck') === 'reset') { try { localStorage.removeItem('nsf-deck'); localStorage.removeItem('nsf-pool-demo'); sessionStorage.removeItem('nsf-deck-skip'); } catch { /* */ } }
+  if (params.get('deck') === 'reset') { try { localStorage.removeItem('nsf-deck'); localStorage.removeItem('nsf-deck-practice'); localStorage.removeItem('nsf-pool-demo'); sessionStorage.removeItem('nsf-deck-skip'); } catch { /* */ } }
   if (!S.promoLive() && !params.has('deck')) return;
 
   const SUITS = [['♠', 'spades', 0], ['♥', 'hearts', 1], ['♦', 'diamonds', 1], ['♣', 'clubs', 0]];
@@ -29,12 +29,13 @@
   // This visitor: an id for the pool, and their card if they have one.
   let vid = S.store.get('nsf-vid', null);
   if (!vid) { vid = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); S.store.set('nsf-vid', vid); }
-  let state = S.store.get('nsf-deck', null);
+  let state = S.store.get(S.deckKey(), null);
   if (!state || state.v !== 2) state = { v: 2, card: null };
-  const save = () => S.store.set('nsf-deck', state);
+  const save = () => S.store.set(S.deckKey(), state);
 
   /* ---------- The pool ---------- */
-  const pool = P.pool ? livePool(P.pool) : demoPool();
+  // The real shared deck only on the live store during the sale; practice cards anywhere else.
+  const pool = P.pool && S.promoReal() ? livePool(P.pool) : demoPool();
 
   function livePool(url) {
     const post = async (body) => (await fetch(url, { method: 'POST', headers: { 'content-type': 'text/plain' }, body: JSON.stringify(body) })).json();
@@ -74,7 +75,7 @@
         const d = load();
         if (!d.taken[k] || d.taken[k].token !== token) return { ok: false, error: 'token' };
         d.taken[k].email = email; S.store.set('nsf-pool-demo', d);
-        return { ok: true, code: P.prizes[d.order[k]].code };
+        return { ok: true, code: P.prizes[d.order[k]].code || 'PRACTICE' };
       },
     };
   }
@@ -105,7 +106,7 @@
     const back = mark();
     deck.innerHTML = `
       <div class="deck__head">
-        <div><h2 id="deck-h">${P.name}. Pick a card.</h2></div>
+        <div><h2 id="deck-h">${P.name}. Pick a card.</h2>${pool.live ? '' : '<p class="deck__practice">Practice deck: nothing here uses up a real card</p>'}</div>
         <p data-deck-left>52 cards, shared by everyone. Once a card is taken, it's gone.</p>
         <button type="button" class="deck__skip" data-deck-skip>Skip to the site</button>
       </div>
@@ -192,7 +193,7 @@
     const c = cards[k];
     pc.classList.remove('is-taken'); pc.disabled = false;
     pc.querySelector('.pc__face').innerHTML = `<span class="pc__idx ${c.red ? 'is-red' : ''}">${c.r}${c.sym}</span>
-      <span class="pc__prize"><span>Your card</span><b>${state.label}</b>${state.code ? `<code>${state.code}</code>` : '<span>Add your email to claim it</span>'}</span>
+      <span class="pc__prize"><span>Your card</span><b${state.label.length > 8 ? ' class="is-long"' : ''}>${state.label}</b>${state.code ? `<code>${state.code}</code>` : '<span>Add your email to claim it</span>'}</span>
       <span class="pc__idx pc__idx--b ${c.red ? 'is-red' : ''}">${c.r}${c.sym}</span>`;
     const table = deck.querySelector('.deck__table').getBoundingClientRect();
     const r = pc.getBoundingClientRect();

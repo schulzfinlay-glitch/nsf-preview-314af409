@@ -57,7 +57,7 @@
     save();
   }
   // The discount only rides checkout once the visitor has given an email for it.
-  const dealCode = () => { const d = store.get('nsf-deck', null); return d && d.code && d.email && promoLive() ? d.code : ''; };
+  const dealCode = () => { const d = store.get(deckKey(), null); return d && d.code && d.email && promoLive() ? d.code : ''; };
   function checkoutUrl(lines = bag) {
     const items = lines.map((l) => `${l.id}:${l.qty}`).join(',');
     const code = dealCode();
@@ -108,8 +108,23 @@
     if (/[?&]promo=clock/.test(location.search)) return inWindow;
     // Test hosts (the GitHub preview, localhost) show the sale all the time.
     const host = location.hostname;
-    const testSite = (P.alwaysOn || []).some((h) => host === h || host.endsWith('.' + h));
-    return !!P.preview || testSite || inWindow;
+    const alwaysOn = (P.alwaysOn || []).some((h) => host === h || host.endsWith('.' + h));
+    return !!P.preview || alwaysOn || inWindow;
+  }
+  // Test hosts (the GitHub preview, localhost) and Shopify's theme preview.
+  function testHost() {
+    const P = window.NSF_PROMO || {}; const host = location.hostname;
+    const shopifyPreview = !!(window.Shopify && Shopify.theme && Shopify.theme.role && Shopify.theme.role !== 'main');
+    return shopifyPreview || (P.alwaysOn || []).some((h) => host === h || host.endsWith('.' + h));
+  }
+  // Practice cards are kept apart from a real card, so a test never carries into the sale.
+  function deckKey() { return promoReal() ? 'nsf-deck' : 'nsf-deck-practice'; }
+  // Real cards only on the live store, inside the sale. Everywhere else the deck
+  // deals practice cards kept in the visitor's own browser, so tests never use one up.
+  function promoReal() {
+    const P = window.NSF_PROMO; if (!P || P.preview || testHost()) return false;
+    const now = Date.now();
+    return now >= Date.parse(P.start) && now < Date.parse(P.end);
   }
 
   // What the bag offers next: the other half of a set, then the cheapest way to free shipping.
@@ -159,7 +174,7 @@
       }).join('') + funnelHtml(left);
     }
     $('#bag-subtotal').textContent = money(sub);
-    const deal = store.get('nsf-deck', null);
+    const deal = store.get(deckKey(), null);
     const codeRow = $('#bag-code');
     if (deal && deal.code && deal.email && promoLive()) {
       codeRow.hidden = false;
@@ -299,7 +314,7 @@
     sessionStorage.setItem('nsf-visit', '1');
   } catch { /* storage blocked: no reminder */ }
 
-  window.NSFSite = { add, renderBag: render, money, img, store, priceHtml, sizesHtml, toast, openBag, sendEmail, promoLive, index, partners, offerHtml, checkout, track, item };
+  window.NSFSite = { add, renderBag: render, money, img, store, priceHtml, sizesHtml, toast, openBag, sendEmail, promoLive, promoReal, deckKey, index, partners, offerHtml, checkout, track, item };
   render();
 })();
 

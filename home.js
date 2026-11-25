@@ -104,7 +104,7 @@
     const ctas = document.querySelector('[data-hero-ctas]');
     const hero = document.querySelector('.hero');
     if (!title || !ctas) return;
-    const deal = S && S.promoLive && S.promoLive() ? S.store.get('nsf-deck', null) : null;
+    const deal = S && S.promoLive && S.promoLive() ? S.store.get(S.deckKey(), null) : null;
     if (!deal || deal.card == null) {
       hero?.classList.remove('hero--sale');
       kicker.textContent = everyday.kicker; title.innerHTML = everyday.title; sub.textContent = everyday.sub; ctas.innerHTML = everyday.ctas;

@@ -28,7 +28,9 @@ window.NSF_PROMO = {
   prizes: [
     { label: '50% off', code: '', cards: 2 },
     // One code for both parts: 15% off the order plus a free gym bag (see README).
-    { label: 'Free gym bag + 15% off', code: '', cards: 2 },
+    // gift: a hidden $0 product in Shopify (stock 2). The site adds it to the
+    // winner's checkout with the code, so it shows on the order and packing slip.
+    { label: 'Free gym bag + 15% off', code: '', cards: 2, gift: 'black-friday-gym-bag' },
     { label: '25% off', code: '', cards: 10 },
     { label: '20% off', code: '', cards: 10 },
     { label: '15% off', code: '', cards: 28 },

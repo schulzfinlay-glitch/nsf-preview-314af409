@@ -58,8 +58,25 @@
   }
   // The discount only rides checkout once the visitor has given an email for it.
   const dealCode = () => { const d = store.get(deckKey(), null); return d && d.code && d.email && promoLive() ? d.code : ''; };
+  /* ---------- A free gift that comes with a card (the gym bag) ----------
+   * The prize names a hidden $0 product (promo.js gift). Its variant is looked up
+   * on the store itself and added to the winner's checkout, next to their code. */
+  const dealGift = () => {
+    const d = store.get(deckKey(), null); if (!d || !d.code || !d.email || !promoLive()) return null;
+    const p = ((window.NSF_PROMO || {}).prizes || []).find((x) => x.label === d.label);
+    return p && p.gift ? p.gift : null;
+  };
+  let giftId = null;
+  function loadGift() {
+    const h = dealGift(); if (!h || giftId) return;
+    fetch(`${STORE}/products/${h}.js`).then((r) => (r.ok ? r.json() : null)).then((p) => {
+      const v = p && p.variants.find((x) => x.available);
+      if (v) { giftId = v.id; render(); }
+    }).catch(() => {});
+  }
   function checkoutUrl(lines = bag) {
-    const items = lines.map((l) => `${l.id}:${l.qty}`).join(',');
+    const gift = dealGift() && giftId ? [{ id: giftId, qty: 1 }] : [];
+    const items = [...lines, ...gift].map((l) => `${l.id}:${l.qty}`).join(',');
     const code = dealCode();
     return `${STORE}/cart/${items}${code ? `?discount=${encodeURIComponent(code)}` : ''}`;
   }
@@ -178,7 +195,8 @@
     const codeRow = $('#bag-code');
     if (deal && deal.code && deal.email && promoLive()) {
       codeRow.hidden = false;
-      codeRow.innerHTML = `<span>Your card: <strong>${deal.label}</strong></span><span class="mono">${deal.code}</span>`;
+      codeRow.innerHTML = `<span>Your card: <strong>${deal.label}</strong></span><span class="mono">${deal.code}</span>${dealGift() ? `<span class="bag-gift">${giftId ? 'Free gym bag: added at checkout' : 'Free gym bag: we\'ll add it to your order'}</span>` : ''}`;
+      loadGift();
     } else if (deal && deal.card != null && promoLive()) {
       // Picked a card but gave no email: not applied. One tap goes back to the email step.
       codeRow.hidden = false;

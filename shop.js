@@ -10,7 +10,7 @@
   const empty = $('.grid__empty', grid);
   const TYPE_NAMES = Object.fromEntries($$('[data-f-type]').map((b) => [b.dataset.fType, b.textContent]));
 
-  const f = { type: '', gender: '', colours: new Set(), sizes: new Set(), sale: false, under: 0, q: '', sort: 'featured' };
+  const f = { type: '', gender: '', colours: new Set(), sizes: new Set(), sale: false, drop: false, under: 0, q: '', sort: 'featured' };
 
   function readUrl() {
     const p = new URLSearchParams(location.search);
@@ -19,6 +19,7 @@
     f.colours = new Set(p.getAll('colour'));
     f.sizes = new Set(p.getAll('size'));
     f.sale = p.get('sale') === '1';
+    f.drop = p.get('drop') === '1';
     f.under = +(p.get('under') || 0);
     f.q = p.get('q') || '';
     f.sort = p.get('sort') || 'featured';
@@ -30,6 +31,7 @@
     f.colours.forEach((c) => p.append('colour', c));
     f.sizes.forEach((z) => p.append('size', z));
     if (f.sale) p.set('sale', '1');
+    if (f.drop) p.set('drop', '1');
     if (f.under) p.set('under', String(f.under));
     if (f.q) p.set('q', f.q);
     if (f.sort !== 'featured') p.set('sort', f.sort);
@@ -53,6 +55,7 @@
         && (!f.gender || el.dataset.gender.split(' ').includes(f.gender))
         && (match(s) !== null)
         && (!f.sale || el.dataset.sale === '1')
+        && (!f.drop || el.dataset.drop === '1')
         && (!f.under || +el.dataset.price < f.under)
         && words.every((w) => hay.includes(w));
       const was = el.hidden; el.hidden = !ok;
@@ -73,8 +76,8 @@
     empty.hidden = shown > 0;
     $('#shop-count').textContent = `${shown} ${shown === 1 ? 'style' : 'styles'}`;
     $('#show-n').textContent = `Show ${shown} ${shown === 1 ? 'style' : 'styles'}`;
-    $('#shop-title').textContent = f.type ? TYPE_NAMES[f.type] : f.gender === 'men' ? "Men's" : f.gender === 'women' ? "Women's" : f.sale ? 'Sale' : 'Shop all';
-    const n = f.colours.size + f.sizes.size + (f.sale ? 1 : 0) + (f.under ? 1 : 0) + (f.gender ? 1 : 0) + (f.q ? 1 : 0);
+    $('#shop-title').textContent = f.type ? TYPE_NAMES[f.type] : f.gender === 'men' ? "Men's" : f.gender === 'women' ? "Women's" : f.sale ? 'Sale' : f.drop ? 'Latest drop' : 'Shop all';
+    const n = f.colours.size + f.sizes.size + (f.sale ? 1 : 0) + (f.drop ? 1 : 0) + (f.under ? 1 : 0) + (f.gender ? 1 : 0) + (f.q ? 1 : 0);
     $('[data-fcount]').textContent = n ? String(n) : '';
     // Reflect state on every control.
     $$('[data-f-type]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.fType === f.type)));
@@ -100,7 +103,7 @@
     if ('fSize' in b.dataset) { toggle(f.sizes, b.dataset.fSize); return apply(); }
     if ('fSale' in b.dataset) { f.sale = !f.sale; return apply(); }
     if ('fUnder' in b.dataset) { f.under = f.under ? 0 : +b.dataset.fUnder; return apply(); }
-    if ('clear' in b.dataset) { Object.assign(f, { type: '', gender: '', colours: new Set(), sizes: new Set(), sale: false, under: 0, q: '' }); return apply(); }
+    if ('clear' in b.dataset) { Object.assign(f, { type: '', gender: '', colours: new Set(), sizes: new Set(), sale: false, drop: false, under: 0, q: '' }); return apply(); }
     if ('openFilters' in b.dataset) { $('#filters').classList.add('is-open'); document.documentElement.style.overflow = 'hidden'; $('#filters button, #filters input')?.focus(); return; }
     if ('closeFilters' in b.dataset) { closeFilters(); }
   });
